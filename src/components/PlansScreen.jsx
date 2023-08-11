@@ -123,7 +123,10 @@ function PlansScreen() {
         success_url: window.location.origin,
         cancel_url: window.location.origin,
       });
-      // console.log(window.location.origin);
+      console.log(db
+        .collection("customers")
+        .doc(user.uid)
+        .collection("checkout_sessions"));
     // Wait for the CheckoutSession to get attached by the extension
     docRef.onSnapshot((snap) => {
       const { error, url } = snap.data();
@@ -153,7 +156,6 @@ function PlansScreen() {
       <h2>Popular Plans :</h2>
       {Object.entries(products).map(([productId, productData]) => {
         const isCurrentPackage = productData.name?.includes(subscription?.role);
-        // console.log(subscription);
         return (
           <div
             className={
@@ -165,6 +167,7 @@ function PlansScreen() {
             <div className={classes.plansScreen__info}>
               <h5>{productData.name}</h5>
               <h6>{productData.description}</h6>
+              <h6>{productData.prices!=undefined?'INR:' +productData.prices.priceData.unit_amount/100 + '/-':''}</h6>
             </div>
             <button
               className={classes.plansScreen__button}
