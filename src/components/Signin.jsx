@@ -1,12 +1,14 @@
 import React, { useRef, useState } from "react";
 import classes from "./Signin.module.css";
 import { auth } from "./firebasefile";
+import { useNavigate } from "react-router-dom";
 
 //sign in/ sign up page for creating new user or logging into existing user 
 function Signin() {
   const name = useRef();
   const emailRef = useRef();
   const passRef = useRef();
+  const navigate = useNavigate();
   const [signUp, setSignUp] = useState(false);
 
   const signInHandler = (event) => {
@@ -15,6 +17,7 @@ function Signin() {
       .signInWithEmailAndPassword(emailRef.current.value, passRef.current.value)
       .then((authUser) => {
         console.log(authUser);
+        navigate(0);
       })
       .catch((error) => {
         console.log("button clicked")

@@ -7,6 +7,7 @@ import { auth } from "./firebasefile";
 import { useNavigate } from "react-router-dom";
 import PlansScreen from "./PlansScreen";
 import { login, logout } from "../features/userSlice";
+
 function Profile() {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
