@@ -10,6 +10,7 @@ function PlansScreen() {
   const [products, setProducts] = useState([]);
   const user = useSelector(selectUser);
   const [subscription, setSubscription] = useState(null);
+  const [annual, setAnnual] = useState(false);
   useEffect(() => {
     db.collection("customers")
       .doc(user?.uid)
@@ -55,28 +56,6 @@ function PlansScreen() {
       current_period_start: null,
     });
     const docRef = await db.collection("customers")
-      // .doc(user?.uid)
-      // .collection("subscriptions")
-      // .add(
-      //   {
-      //     role: 'Nan',
-      //     current_period_end: 0,
-      //     current_period_start: 0,
-      //   }
-      // )
-      // docRef.onSnapshot((snap) => {
-      //   const { error, url } = snap.data();
-      //   // console.log(snap)
-      //   if (error) {
-      //     // Show an error to the customer and
-      //     // inspect your Cloud Function logs in the Firebase console.
-      //     alert(`An error occured: ${error.message}`);
-      //   }
-      //   if (url) {
-      //     //  Stripe Checkout URL, redirect.
-      //     window.location.assign(url);
-      //   }
-      // });
       const snapshot = await docRef
       .doc(user?.uid)
       .collection("subscriptions")
@@ -88,7 +67,7 @@ function PlansScreen() {
   }
   const loadCheckout = async (priceId) => {
     // console.log(priceId)
-    // console.log("Ashish" + user.uid);
+    // console.log("Aditya" + user.uid);
 
     // const docRef = await db
     //   .collection("customers")
@@ -154,10 +133,33 @@ function PlansScreen() {
         </p>
       )}
       <h2>Popular Plans :</h2>
+      <button onClick={()=>{
+        setAnnual(!annual);
+      }}>Switch to {annual?'Monthly Plans':'Annual Plans'}</button>
       {Object.entries(products).map(([productId, productData]) => {
         const isCurrentPackage = productData.name?.includes(subscription?.role);
         return (
-          <div
+         annual?( <div
+          className={
+            isCurrentPackage
+              ? classes.plansScreen__plan__disabled
+              : classes.plansScreen__plan
+          }
+        >
+          <div className={classes.plansScreen__info}>
+            <h5>{productData.name}</h5>
+            <h6>{productData.description}</h6>
+            <h6>{productData.prices!=undefined?'INR ' +(productData.prices.priceData.unit_amount/100)*12 + '/-':''}</h6>
+          </div>
+          <button
+            className={classes.plansScreen__button}
+            onClick={() => {
+              isCurrentPackage?unsubscribe():loadCheckout(productData.prices.priceId
+            )}}
+          >
+            {isCurrentPackage ? "Unsubscribe" : "Subscribe"}
+          </button>
+        </div>):( <div
             className={
               isCurrentPackage
                 ? classes.plansScreen__plan__disabled
@@ -167,7 +169,7 @@ function PlansScreen() {
             <div className={classes.plansScreen__info}>
               <h5>{productData.name}</h5>
               <h6>{productData.description}</h6>
-              <h6>{productData.prices!=undefined?'INR:' +productData.prices.priceData.unit_amount/100 + '/-':''}</h6>
+              <h6>{productData.prices!=undefined?'INR:' +(productData.prices.priceData.unit_amount/100) + '/-':''}</h6>
             </div>
             <button
               className={classes.plansScreen__button}
@@ -177,7 +179,7 @@ function PlansScreen() {
             >
               {isCurrentPackage ? "Unsubscribe" : "Subscribe"}
             </button>
-          </div>
+          </div>)
         );
       })}
     </div>
